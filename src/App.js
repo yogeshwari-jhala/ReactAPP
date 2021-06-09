@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import './App.css';
+import firebase from './Components/Firebase';
+
 import {BrowserRouter, Route, Switch} from 'react-router-dom';
 import Home from './Components/Home';
 import Welcome from './Components/Welcome';
@@ -13,8 +15,17 @@ class App extends Component{
   constructor() {
     super();
     this.state = {
-      user: 'Raybo'
+      user: null
     };
+  }
+
+  componentDidMount(){
+    const ref = firebase.database().ref('user');
+
+    ref.on('value', snapshot => {
+      let FBUser = snapshot.val();
+      this.setState({ user: FBUser });
+    });
   }
   render(){
     return (
