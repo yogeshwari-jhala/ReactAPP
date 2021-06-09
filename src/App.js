@@ -3,6 +3,8 @@ import './App.css';
 
 import Home from './Components/Home';
 import Welcome from './Components/Welcome';
+import Navigation from './Components/Navigation';
+
 
 class App extends Component{
   constructor() {
@@ -14,6 +16,7 @@ class App extends Component{
   render(){
     return (
       <div>
+        <Navigation user={this.state.user} />
         {this.state.user && <Welcome user={this.state.user} />}
         <Home user={this.state.user} />
       </div>
