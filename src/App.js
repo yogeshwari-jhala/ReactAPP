@@ -1,8 +1,7 @@
 import React, {Component} from 'react';
 import './App.css';
 import firebase from './Components/Firebase';
-
-import {BrowserRouter, Route, Switch} from 'react-router-dom';
+import { Router, navigate } from '@reach/router';
 import Home from './Components/Home';
 import Welcome from './Components/Welcome';
 import Navigation from './Components/Navigation';
@@ -10,39 +9,62 @@ import Login from './Components/Login';
 import Meetings from './Components/Meetings';
 import Register from './Components/Register';
 
-
-class App extends Component{
+class App extends Component {
   constructor() {
     super();
     this.state = {
-      user: null
+      user: null,
+      displayName: null,
+      userID: null
     };
   }
 
-  componentDidMount(){
-    const ref = firebase.database().ref('user');
-
-    ref.on('value', snapshot => {
-      let FBUser = snapshot.val();
-      this.setState({ user: FBUser });
+  componentDidMount() {
+    firebase.auth().onAuthStateChanged(FBUser => {
+      if (FBUser) {
+        this.setState({
+          user: FBUser,
+          displayName: FBUser.displayName,
+          userID: FBUser.uid
+        });
+      }
     });
   }
-  render(){
+
+  registerUser = userName => {
+    firebase.auth().onAuthStateChanged(FBUser => {
+      FBUser.updateProfile({
+        displayName: userName
+      }).then(() => {
+        this.setState({
+          user: FBUser,
+          displayName: FBUser.displayName,
+          userID: FBUser.uid
+        });
+        navigate('/meetings');
+      });
+    });
+  };
+
+  render() {
     return (
       <div>
-        <BrowserRouter>
         <Navigation user={this.state.user} />
-        {this.state.user && <Welcome user={this.state.user} />}
-        <Switch>
-        
-          <Route path="/" exact user={this.state.user} component={Home}/>  
-          <Route path="/login" user={this.state.user} component={Login}/> 
-          <Route path="/meetings" user={this.state.user} component={Meetings}/>
-          <Route path="/register" user={this.state.user} component={Register}/>
-        </Switch>
-        </BrowserRouter>
+        {this.state.user && (
+          <Welcome userName={this.state.displayName} />
+        )}
+
+        <Router>
+          <Home path="/" user={this.state.user} />
+          <Login path="/login" />
+          <Meetings path="/meetings" />
+          <Register
+            path="/register"
+            registerUser={this.registerUser}
+          />
+        </Router>
       </div>
-    )
+    );
   }
 }
 
