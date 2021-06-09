@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { FaUsers } from 'react-icons/fa';
-
 class Navigation extends Component {
   render() {
     const { user } = this.props;
