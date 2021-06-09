@@ -1,16 +1,23 @@
 import React, {Component} from 'react';
 import './App.css';
-import Home from './Components/Home';
 
-class App extends React.Component{
-  constructor(){
+import Home from './Components/Home';
+import Welcome from './Components/Welcome';
+
+class App extends Component{
+  constructor() {
     super();
     this.state = {
-      user : Ray
+      user: 'Raybo'
     };
   }
   render(){
-    return <Home/>
+    return (
+      <div>
+        {this.state.user && <Welcome user={this.state.user} />}
+        <Home user={this.state.user} />
+      </div>
+    )
   }
 }
 

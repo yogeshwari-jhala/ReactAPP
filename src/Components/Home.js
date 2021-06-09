@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 class Home extends Component {
   render() {
+    const { user } = this.props;
+
     return (
       <div className="container text-center">
         <div className="row justify-content-center">
@@ -16,8 +18,9 @@ class Home extends Component {
               way to learn <a href="https://reactjs.org/" style={{textDecoration: 'none'}}>React </a>
               with <a href="https://firebase.google.com" style={{textDecoration: 'none'}}>Firebase</a>.
             </p>
-
-            <a
+            {user == null && (
+              <span>
+                  <a
               href="/register"
               className="btn btn-outline-primary mr-2"
               style={{margin: '5px'}}
@@ -27,9 +30,13 @@ class Home extends Component {
             <a href="/login" className="btn btn-outline-primary mr-2" style={{margin: '5px'}}>
               Log In
             </a>
-            <a href="/meetings" className="btn btn-primary" style={{margin: '5px'}}>
-              Meetings
-            </a>
+              </span>
+            )}
+            {user && (
+              <a href="/meetings" className="btn btn-primary" style={{margin: '5px'}}>
+                Meetings
+              </a>
+            )}
           </div>{' '}
           {/* columns */}
         </div>
