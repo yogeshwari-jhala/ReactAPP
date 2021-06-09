@@ -2,12 +2,14 @@ import React, {Component} from 'react';
 import './App.css';
 import firebase from './Components/Firebase';
 import { Router, navigate } from '@reach/router';
+import CheckIn from './Components/CheckIn';
 import Home from './Components/Home';
 import Welcome from './Components/Welcome';
 import Navigation from './Components/Navigation';
 import Login from './Components/Login';
 import Meetings from './Components/Meetings';
 import Register from './Components/Register';
+import Attendees from './Components/Attendees';
 
 class App extends Component {
   constructor() {
@@ -19,7 +21,7 @@ class App extends Component {
     };
   }
 
-  componentDidMount() {
+componentDidMount() {
     firebase.auth().onAuthStateChanged(FBUser => {
       if (FBUser) {
         this.setState({
@@ -27,6 +29,29 @@ class App extends Component {
           displayName: FBUser.displayName,
           userID: FBUser.uid
         });
+
+        const meetingsRef = firebase
+          .database()
+          .ref('meetings/' + FBUser.uid);
+
+        meetingsRef.on('value', snapshot => {
+          let meetings = snapshot.val();
+          let meetingsList = [];
+
+          for (let item in meetings) {
+            meetingsList.push({
+              meetingID: item,
+              meetingName: meetings[item].meetingName
+            });
+          }
+
+          this.setState({
+            meetings: meetingsList,
+            howManyMeetings: meetingsList.length
+          });
+        });
+      } else {
+        this.setState({ user: null });
       }
     });
   }
@@ -84,7 +109,15 @@ class App extends Component {
         <Router>
           <Home path="/" user={this.state.user} />
           <Login path="/login" />
-          <Meetings path="/meetings" addMeeting={this.addMeeting}/>
+          <Meetings path="/meetings" 
+          meetings={this.state.meetings}
+          addMeeting={this.addMeeting}
+          userID={this.state.userID}/>
+          <Attendees
+            path="/attendees/:userID/:meetingID"
+            adminUser={this.state.userID}
+          />
+           <CheckIn path="/checkin/:userID/:meetingID" />
           <Register
             path="/register"
             registerUser={this.registerUser}
